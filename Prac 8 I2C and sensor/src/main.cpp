@@ -1,8 +1,7 @@
 #include <Arduino.h>
 #include <avr/io.h>
+#include <util/delay.h>
 
-const uint8_t I2C_SDA_PIN = A4;
-const uint8_t I2C_SCL_PIN = A5;
 const uint8_t MPU6050_ADDRESS = 0x68;
 const uint8_t MPU6050_WHO_AM_I = 0x75;
 const uint8_t MPU6050_PWR_MGMT_1 = 0x6B;
@@ -87,8 +86,8 @@ bool mpu6050_read_registers(uint8_t reg, uint8_t *data, uint8_t length) {
 void setup() {
   Serial.begin(9600);
 
-  pinMode(I2C_SDA_PIN, INPUT_PULLUP);
-  pinMode(I2C_SCL_PIN, INPUT_PULLUP);
+  DDRC &= ~((1 << PC4) | (1 << PC5));
+  PORTC |= (1 << PC4) | (1 << PC5);
   i2c_init();
 
   Serial.println(F("Prac 8: low-level I2C MPU6050"));
@@ -123,5 +122,5 @@ void loop() {
     Serial.println(F("Sensor read failed"));
   }
 
-  delay(1000);
+  _delay_ms(1000);
 }

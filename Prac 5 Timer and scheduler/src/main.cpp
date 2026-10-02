@@ -3,7 +3,6 @@
 #include <LiquidCrystal.h>
 // RS, E, D4, D5, D6, D7
 LiquidCrystal lcd(6, 7, A2, A3, A4, A5); 
-const uint8_t LCD_VIRTUAL_GND = 12;
 // ================== Timer1: CTC 1ms tick (nhịp gốc hệ thống) ==================
 volatile uint16_t cnt_ADC    = 10;   // Task1 (10ms)
 volatile uint16_t cnt_LED    = 20;   // Task2 (20ms)
@@ -27,10 +26,10 @@ void Scheduler_init() {
   sei();
 }
 bool TakeFlag(volatile bool &flag) {
-  noInterrupts();
+  cli();
   ;bool pending = flag;
   flag = false;
-  interrupts();
+  sei();
   return pending;
 }
 // ================== Timer2: PWM cho LED ==================
@@ -87,8 +86,8 @@ void Task_SendUART() {
   Serial.println(ledDuty);
 }
 void setup() {
-  pinMode(LCD_VIRTUAL_GND, OUTPUT);
-  digitalWrite(LCD_VIRTUAL_GND, LOW);
+  DDRB |= (1 << PB4); // D12
+  PORTB &= ~(1 << PB4);
   Serial.begin(9600);
   ADC_init();
   LED_PWM_init();

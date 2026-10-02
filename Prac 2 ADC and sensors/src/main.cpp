@@ -26,7 +26,7 @@ ISR(ADC_vect)
 
 void startAdcSampling()
 {
-  noInterrupts();
+  cli();
 
   adcSum = 0;
   adcCount = 0;
@@ -52,7 +52,7 @@ void startAdcSampling()
 
   ADCSRA |= (1 << ADSC);
 
-  interrupts();
+  sei();
 }
 
 void setup()
@@ -80,10 +80,10 @@ void loop()
     uint32_t sum;
     uint16_t averageRaw;
 
-    noInterrupts();
+    cli();
     sum = adcSum;
     averageRaw = sum / ADC_SAMPLES;
-    interrupts();
+    sei();
 
     uint32_t voltageMv =
         ((uint32_t)averageRaw * ADC_VREF_MV) / 1023UL;

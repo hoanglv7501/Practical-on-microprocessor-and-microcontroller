@@ -1,5 +1,6 @@
 //Input Capture
 #include <Arduino.h>
+#include <util/delay.h>
 // ================== Timer2: Tạo sóng vuông mẫu 1kHz tại D11 (PB3) ==================
 void SignalGenerator_init() {
   DDRB |= (1 << PB3); // D11 làm output
@@ -39,10 +40,10 @@ void setup() {
 }
 void loop() {
   if (newCaptureAvailable) {
-    noInterrupts();
+    cli();
     uint16_t ticks = periodTicks;
     newCaptureAvailable = false;
-    interrupts();
+    sei();
     // f_timer = 16MHz / 8 = 2MHz (mỗi tick = 0.5µs)
     float periodSeconds = ticks / 2000000.0;
     float frequencyHz = 1.0 / periodSeconds;
@@ -53,6 +54,6 @@ void loop() {
     Serial.print(" us | Frequency: ");
     Serial.print(frequencyHz);
     Serial.println(" Hz");
-    delay(200); // giãn cách in cho dễ đọc, không ảnh hưởng độ chính xác đo (đo vẫn chạy nền qua ngắt)
+    _delay_ms(200); // giãn cách in cho dễ đọc, không ảnh hưởng độ chính xác đo
   }
 }
